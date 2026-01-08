@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <title>Coffee Geek</title>
+    <style>
+        /* --- Coffee Geek White Glass & Gold Theme --- */
+        :root {
+            --text-main: #0f172a;       
+            --text-sub: #64748b;        
+            
+            --accent-green: #059669;    
+            --accent-gold: #d97706;     
+            --accent-gold-light: #fef3c7;
+            
+            --glass-bg: rgba(255, 255, 255, 0.7); 
+            --glass-border: rgba(255, 255, 255, 0.9);
+            --glass-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05), inset 0 0 20px rgba(255,255,255,0.5);
+            --radius: 26px;
+        }
+
+        body {
+            background-color: #f8fafc;
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 24px;
+            padding-bottom: 120px;
+            -webkit-tap-highlight-color: transparent;
+            line-height: 1.5;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* --- Ambient Background --- */
+        .ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+            background: radial-gradient(circle at top right, #fff, #f1f5f9);
+        }
+        
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(70px);
+            opacity: 0.6;
+            animation: float 25s infinite alternate ease-in-out;
+        }
+        .shape-1 {
+            width: 400px; height: 400px;
+            background: rgba(16, 185, 129, 0.12);
+            top: -100px; left: -80px;
+        }
+        .shape-2 {
+            width: 350px; height: 350px;
+            background: rgba(251, 191, 36, 0.15);
+            bottom: 5%; right: -60px;
+            animation-delay: -5s;
+        }
+        
+        .ribbon {
+            position: absolute;
+            height: 120px; width: 500px;
+            background: linear-gradient(90deg, rgba(5, 150, 105, 0.06), rgba(217, 119, 6, 0.06));
+            transform: rotate(-35deg);
+            filter: blur(50px);
+            border-radius: 100px;
+            animation: wave 20s infinite alternate ease-in-out;
+        }
+        .ribbon-1 { top: 20%; right: -100px; }
+        .ribbon-2 { bottom: 15%; left: -50px; background: linear-gradient(90deg, rgba(217, 119, 6, 0.05), rgba(5, 150, 105, 0.08)); transform: rotate(20deg); }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(30px, 40px) scale(1.05); }
+        }
+        @keyframes wave {
+            0% { transform: rotate(-35deg) translateY(0); }
+            100% { transform: rotate(-30deg) translateY(20px); }
+        }
+
+        /* Typography */
+        h1 { 
+            margin: 0; 
+            font-size: 32px; 
+            font-weight: 800; 
+            letter-spacing: -0.03em; 
+            color: var(--text-main); 
+            background: linear-gradient(135deg, var(--accent-green) 0%, #0f172a 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        h2 { 
+            font-size: 12px; 
+            color: var(--text-sub); 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            font-weight: 700; 
+            margin: 36px 0 16px 8px; 
+            opacity: 0.9;
+        }
+
+        /* Glass Cards */
+        .card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--glass-shadow);
+            transition: transform 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        /* Controls */
+        label { display: block; margin-bottom: 12px; font-size: 13px; font-weight: 600; color: var(--text-main); }
+        
+        .input-wrapper { position: relative; width: 100%; }
+        
+        .input-group { 
+            display: flex; 
+            gap: 12px; 
+            background: rgba(255, 255, 255, 0.5); 
+            padding: 6px; 
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.6);
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.01);
+        }
+        .input-group:focus-within {
+            background: white;
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1);
+        }
+
+        /* FIX: Added input[type="password"] to styling so it matches the theme */
+        input[type="text"], input[type="password"] {
+            flex: 1;
+            padding: 12px 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-main);
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+        }
+        input[type="text"]:focus, input[type="password"]:focus { outline: none; }
+        
+        .btn-history {
+            width: 48px; height: 48px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 14px;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-sub);
+            transition: all 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .btn-history:active { transform: scale(0.95); background: var(--accent-gold-light); color: var(--accent-gold); }
+
+        .suggestions-list {
+            position: absolute;
+            top: 115%; left: 0; right: 0;
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.8);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+            z-index: 50;
+            max-height: 250px;
+            overflow-y: auto;
+            display: none;
+            padding: 8px;
+        }
+        .suggestions-list.active { display: block; animation: slideDown 0.2s ease; }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .suggestion-item {
+            padding: 12px 16px;
+            font-size: 15px;
+            color: var(--text-main);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex; justify-content: space-between;
+            transition: background 0.2s;
+        }
+        .suggestion-item:hover { background: #f1f5f9; }
+        .suggestion-meta { font-size: 12px; color: var(--text-sub); }
+
+        .btn-group { 
+            display: flex; 
+            gap: 8px; 
+            margin-bottom: 24px; 
+            background: rgba(255,255,255,0.4);
+            padding: 5px;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        
+        .btn-select {
+            flex: 1;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: var(--text-sub);
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-select.active {
+            background: white;
+            color: var(--accent-green);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            font-weight: 700;
+        }
+
+        .method-toggle {
+            display: flex;
+            background: rgba(255,255,255,0.4);
+            border: 1px solid rgba(255,255,255,0.5);
+            padding: 6px;
+            border-radius: 20px;
+            margin-bottom: 30px;
+        }
+        .method-btn {
+            flex: 1;
+            text-align: center;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            color: var(--text-sub);
+            background: transparent;
+            transition: all 0.2s ease;
+        }
+        .method-btn.active {
+            background: white;
+            color: var(--accent-green);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            font-weight: 800;
+        }
+
+        .slider-container { margin-bottom: 28px; }
+        .slider-header { display: flex; justify-content: space-between; margin-bottom: 14px; font-size: 14px; align-items: center; }
+        .slider-value { font-size: 20px; font-weight: 800; color: var(--accent-green); font-variant-numeric: tabular-nums; letter-spacing: -0.5px; }
+        
+        input[type=range] {
+            width: 100%;
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 28px; width: 28px;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid var(--accent-green);
+            margin-top: -12px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: grab;
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            background-image: linear-gradient(90deg, var(--accent-green), var(--accent-green));
+            background-size: 0% 100%;
+            background-repeat: no-repeat;
+        }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        
+        .stat-box {
+            background: white;
+            padding: 22px;
+            border-radius: 24px;
+            border: 1px solid rgba(255,255,255,0.8);
+            display: flex; 
+            flex-direction: column; 
+            justify-content: space-between;
+            align-items: flex-start;
+            height: 110px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 25px -5px rgba(0,0,0,0.03);
+        }
+
+        .stat-icon-bg {
+            position: absolute;
+            bottom: -10px; right: -10px;
+            width: 80px; height: 80px;
+            opacity: 0.15;
+            transform: rotate(-15deg);
+            z-index: 1;
+        }
+        
+        .icon-bean { color: #8d6e63; }
+        .icon-drop { color: #3b82f6; }
+        .icon-dial { color: #64748b; }
+        .icon-grind { color: var(--accent-gold); opacity: 0.2 !important; }
+
+        .stat-label { 
+            font-size: 11px; 
+            color: var(--accent-green); 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            font-weight: 800; 
+            z-index: 2;
+        }
+        .stat-val { 
+            font-size: 30px; 
+            font-weight: 800; 
+            color: var(--text-main); 
+            line-height: 1; 
+            z-index: 2;
+            letter-spacing: -1px;
+        }
+        .stat-sub { 
+            font-size: 13px; 
+            color: var(--text-sub); 
+            font-weight: 500; 
+            margin-top: auto; 
+            z-index: 2;
+        }
+        
+        select.recipe-select {
+            width: 100%;
+            padding: 16px;
+            background: white;
+            border: 1px solid #e2e8f0;
+            color: var(--text-main);
+            border-radius: 18px;
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23059669%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 20px top 50%;
+            background-size: 12px auto;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+        }
+
+        /* Apax Bottles Layout */
+        .apax-container { 
+            display: flex; 
+            justify-content: space-around; 
+            margin-top: 24px;
+            align-items: flex-end; 
+            height: 120px; 
+        }
+        
+        .bottle-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 8px;
+        }
+
+        .bottle {
+            width: 52px; 
+            min-height: 40px;
+            border-radius: 24px 24px 8px 8px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 18px; color: white;
+            box-shadow: 0 10px 20px -5px rgba(0,0,0,0.15);
+            transition: height 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            border: 1px solid rgba(255,255,255,0.5);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+        }
+        .b-tonik { background: linear-gradient(135deg, #3b82f6, #1d4ed8); }
+        .b-jamm  { background: linear-gradient(135deg, #ef4444, #b91c1c); }
+        .b-lilac { background: linear-gradient(135deg, #a78bfa, #7c3aed); }
+        
+        .b-label {
+            font-size: 11px; 
+            font-weight: 700; 
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .recipe-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
+        .recipe-title { font-weight: 800; color: var(--text-main); font-size: 17px; }
+        .recipe-meta { font-size: 11px; color: var(--accent-gold); font-weight: 800; background: var(--accent-gold-light); padding: 6px 12px; border-radius: 10px;}
+        .step-list { list-style: none; padding: 0; margin: 0; }
+        .step-item { display: flex; gap: 16px; margin-bottom: 18px; font-size: 15px; line-height: 1.6; color: var(--text-main); align-items: flex-start; }
+        .step-num { 
+            min-width: 28px; height: 28px; 
+            background: var(--accent-green); color: white; 
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            font-size: 13px; font-weight: 700; margin-top: 0px; box-shadow: 0 4px 10px rgba(5, 150, 105, 0.3);
+        }
+        .step-highlight { color: var(--accent-green); font-weight: 700; }
+        .temp-badge {
+            display: inline-block;
+            background: #fee2e2;
+            color: #b91c1c;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 700;
+            font-size: 12px;
+            margin-right: 6px;
+        }
+
+        .preset-btns { display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
+        .preset-btn { 
+            background: rgba(255,255,255,0.6); border: 1px solid #e2e8f0; 
+            color: var(--text-sub); padding: 8px 14px; border-radius: 12px; font-size: 12px; font-weight: 600; 
+            cursor: pointer; transition: all 0.2s;
+        }
+        .preset-btn:hover { background: white; border-color: var(--accent-green); color: var(--accent-green); }
+        
+        .save-btn {
+            width: 100%; padding: 22px;
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+            color: white;
+            font-weight: 800; font-size: 16px;
+            border: none; border-radius: 22px;
+            margin-top: 24px; cursor: pointer;
+            box-shadow: 0 10px 30px -5px rgba(217, 119, 6, 0.3);
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            transition: all 0.2s;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .save-btn:active { transform: scale(0.97); }
+
+        .history-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255, 255, 255, 0.95); 
+            backdrop-filter: blur(10px);
+            z-index: 100; padding: 24px; overflow-y: auto;
+        }
+        .history-overlay.active { display: block; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .history-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .close-btn { background: #f1f5f9; border: none; padding: 10px 20px; border-radius: 14px; font-weight: 700; font-size: 14px; color: var(--text-main); cursor: pointer;}
+
+    </style>
+</head>
+<body>
+
+    <div class="ambient-bg">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div class="ribbon ribbon-1"></div>
+        <div class="ribbon ribbon-2"></div>
+    </div>
+
+    <div id="historyOverlay" class="history-overlay">
+        <div class="history-header">
+            <h1>Brew Log</h1>
+            <button class="close-btn" onclick="toggleHistory()">Close</button>
+        </div>
+        <div id="historyList"></div>
+    </div>
+
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+        <h1>Coffee Geek</h1>
+        <div style="font-size: 12px; font-weight: 800; color: #fff; background: var(--accent-green); padding: 6px 14px; border-radius: 20px; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3);">V5.4</div>
+    </div>
+
+    <div class="method-toggle">
+        <button class="method-btn active" id="m-aiden" onclick="setMethod('aiden')">Aiden Machine</button>
+        <button class="method-btn" id="m-pourover" onclick="setMethod('pourover')">Pour Over</button>
+    </div>
+
+    <h2>1. The Beans</h2>
+    <div class="card">
+        <div class="input-wrapper">
+            <div class="input-group">
+                <input type="text" id="beanInput" placeholder="Bean Name (e.g. Onyx)" oninput="filterHistory()" autocomplete="off">
+                <button class="btn-history" onclick="toggleHistory()" title="View Brew Log">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width:24px; height:24px;"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                </button>
+            </div>
+            <div id="suggestions" class="suggestions-list"></div>
+        </div>
+        
+        <label style="margin-top: 24px;">Roast Level</label>
+        <div class="btn-group">
+            <button class="btn-select active" onclick="setRoast('light')" id="r-light">Light</button>
+            <button class="btn-select" onclick="setRoast('medium')" id="r-medium">Medium</button>
+            <button class="btn-select" onclick="setRoast('dark')" id="r-dark">Dark</button>
+        </div>
+
+        <label>Process</label>
+        <div class="btn-group" style="flex-wrap: wrap;">
+            <button class="btn-select active" onclick="setProcess('washed')" id="p-washed">Washed</button>
+            <button class="btn-select" onclick="setProcess('natural')" id="p-natural">Natural</button>
+            <button class="btn-select" onclick="setProcess('honey')" id="p-honey">Honey</button>
+            <button class="btn-select" onclick="setProcess('fermented')" id="p-fermented">Ferm.</button>
+        </div>
+    </div>
+
+    <h2>2. Brew Parameters</h2>
+    <div class="card">
+        
+        <label>Recipe Strategy</label>
+        <select id="recipeStyle" class="recipe-select" onchange="update()">
+            <option value="auto">✨ Smart Match (Recommended)</option>
+            <option value="hoffmann">James Hoffmann (2 Pours)</option>
+            <option value="kasuya">Tetsu Kasuya (4:6)</option>
+            <option value="japan">🇯🇵 Japanese Multi-Pour</option>
+            <option value="lance">Lance Hedrick (Simple)</option>
+        </select>
+
+        <div class="slider-container">
+            <div class="slider-header">
+                <span style="font-weight: 600; color: var(--text-sub);">Water Volume</span>
+                <span class="slider-value"><span id="volDisp">500</span>ml</span>
+            </div>
+            <input type="range" min="200" max="1500" step="25" value="500" id="volRange" oninput="update()">
+            <div class="preset-btns">
+                <button class="preset-btn" onclick="setVol(300)">300ml</button>
+                <button class="preset-btn" onclick="setVol(500)">500ml</button>
+                <button class="preset-btn" onclick="setVol(1000)">1.0L</button>
+            </div>
+        </div>
+
+        <div class="slider-container">
+            <div class="slider-header">
+                <span style="font-weight: 600; color: var(--text-sub);">Ratio (1:x)</span>
+                <span class="slider-value">1:<span id="ratioDisp">16</span></span>
+            </div>
+            <input type="range" min="12" max="20" step="0.5" value="16" id="ratioRange" oninput="update()">
+            <div class="preset-btns">
+                <button class="preset-btn" onclick="setRatio(15)">1:15</button>
+                <button class="preset-btn" onclick="setRatio(16)">1:16</button>
+                <button class="preset-btn" onclick="setRatio(17)">1:17</button>
+            </div>
+        </div>
+
+    </div>
+
+    <h2>3. The Recipe</h2>
+    <div class="card">
+        <div class="grid">
+            <div class="stat-box">
+                <div class="stat-icon-bg icon-bean"><svg fill="currentColor" viewBox="0 0 24 24" width="100%" height="100%"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg></div>
+                <div class="stat-label">Coffee</div>
+                <div class="stat-val" id="coffeeDose">31.3g</div>
+                <div class="stat-sub">Dose</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-icon-bg icon-drop"><svg fill="currentColor" viewBox="0 0 24 24" width="100%" height="100%"><path d="M12 2c-5.33 4.55-8 8.48-8 11.8 0 4.98 3.8 8.2 8 8.2s8-3.22 8-8.2c0-3.32-2.67-7.25-8-11.8z"/></svg></div>
+                <div class="stat-label">Water</div>
+                <div class="stat-val" id="waterDose">500ml</div>
+                <div class="stat-sub">Total</div>
+            </div>
+        </div>
+
+        <div style="margin-top: 16px;">
+            <div class="stat-box" style="width: auto;">
+                <div class="stat-icon-bg icon-grind"><svg fill="currentColor" viewBox="0 0 24 24" width="100%" height="100%"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-5-9h10v2H7z"/></svg></div>
+                <div class="stat-label">Grind Size</div>
+                <div class="stat-val" id="grindSize">950</div>
+                <div class="stat-sub">Microns (Approx)</div>
+            </div>
+        </div>
+
+        <div class="apax-container">
+            <div class="bottle-wrapper">
+                <div id="vis-tonik" class="bottle b-tonik" style="height: 60px;">2.5</div>
+                <div class="b-label">Tonik</div>
+            </div>
+            <div class="bottle-wrapper">
+                <div id="vis-jamm" class="bottle b-jamm" style="height: 80px;">3.0</div>
+                <div class="b-label">Jamm</div>
+            </div>
+            <div class="bottle-wrapper">
+                <div id="vis-lilac" class="bottle b-lilac" style="height: 40px;">1.5</div>
+                <div class="b-label">Lilac</div>
+            </div>
+        </div>
+        
+    </div>
+
+    <h2>4. Instructions</h2>
+    <div class="card">
+        <div class="recipe-header">
+            <div class="recipe-title">Pour Structure</div>
+            <div class="recipe-meta" id="totalTime">3:30 Total</div>
+        </div>
+        <ul class="step-list" id="steps">
+            </ul>
+        
+        <button class="save-btn" onclick="saveRecipe()">
+            <svg style="width:20px;height:20px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+            Save to Log
+        </button>
+    </div>
+
+    <div id="aiden-section" style="display:none;">
+        <h2>Fellow Aiden Upload</h2>
+        <div class="card">
+            <p style="font-size:13px; color:var(--text-sub); margin-bottom:16px;">
+                Enter your Fellow account details to push this recipe to your machine. 
+                <br><b>Note:</b> Credentials are saved locally in your browser for convenience.
+            </p>
+            <div class="input-group" style="margin-bottom:12px;">
+                <input type="text" id="fellowEmail" placeholder="Fellow Email">
+            </div>
+            <div class="input-group" style="margin-bottom:12px;">
+                <input type="password" id="fellowPassword" placeholder="Fellow Password">
+            </div>
+            
+            <button class="save-btn" style="background: #0f172a;" onclick="uploadToAiden()">
+                Upload Profile
+            </button>
+            <div id="uploadStatus" style="margin-top:16px; font-size:13px; font-weight:600; text-align:center;"></div>
+        </div>
+    </div>
+
+
+<script>
+    // --- STATE & DATA ---
+    let currentMethod = 'aiden'; // 'aiden' or 'pourover'
+    let currentRoast = 'light';
+    let currentProcess = 'washed';
+
+    // Helper: Crash-proof JSON parsing
+    function safeJsonParse(key, fallback) {
+        try {
+            const item = localStorage.getItem(key);
+            return item ? JSON.parse(item) : fallback;
+        } catch (e) {
+            console.warn(`Corrupted data for ${key}, resetting.`, e);
+            localStorage.removeItem(key); // Clear bad data
+            return fallback;
+        }
+    }
+
+    // --- INIT ---
+    window.onload = function() {
+        update();
+        renderHistory();
+        
+        // Load saved Aiden credentials if they exist
+        const savedEmail = localStorage.getItem('fellowEmail');
+        const savedPass = localStorage.getItem('fellowPassword');
+        
+        if (savedEmail) document.getElementById('fellowEmail').value = savedEmail;
+        if (savedPass) document.getElementById('fellowPassword').value = savedPass;
+    };
+
+    // --- INPUT HANDLERS ---
+    function setMethod(m) {
+        currentMethod = m;
+        document.getElementById('m-aiden').className = m === 'aiden' ? 'method-btn active' : 'method-btn';
+        document.getElementById('m-pourover').className = m === 'pourover' ? 'method-btn active' : 'method-btn';
+        
+        // Show/Hide Aiden Section
+        const aidenSection = document.getElementById('aiden-section');
+        if (m === 'aiden') {
+            aidenSection.style.display = 'block';
+        } else {
+            aidenSection.style.display = 'none';
+        }
+        update();
+    }
+
+    function setRoast(r) {
+        currentRoast = r;
+        ['light','medium','dark'].forEach(t => document.getElementById('r-'+t).className = 'btn-select');
+        document.getElementById('r-'+r).className = 'btn-select active';
+        update();
+    }
+
+    function setProcess(p) {
+        currentProcess = p;
+        ['washed','natural','honey','fermented'].forEach(t => document.getElementById('p-'+t).className = 'btn-select');
+        document.getElementById('p-'+p).className = 'btn-select active';
+        update();
+    }
+
+    function setVol(v) { document.getElementById('volRange').value = v; update(); }
+    function setRatio(r) { document.getElementById('ratioRange').value = r; update(); }
+
+    // --- CORE LOGIC ---
+    function update() {
+        // Inputs
+        const waterTotal = parseInt(document.getElementById('volRange').value);
+        const ratio = parseFloat(document.getElementById('ratioRange').value);
+        const style = document.getElementById('recipeStyle').value;
+
+        // Calc
+        const coffee = (waterTotal / ratio).toFixed(1);
+        
+        // Display Basics
+        document.getElementById('volDisp').innerText = waterTotal;
+        document.getElementById('ratioDisp').innerText = ratio;
+        document.getElementById('coffeeDose').innerText = coffee + "g";
+        document.getElementById('waterDose').innerText = waterTotal + "ml";
+
+        // Logic: Grind Size & Temp based on Roast
+        let micron = 950;
+        let temp = 93;
+        
+        if (currentRoast === 'light') { micron = 900; temp = 96; }
+        if (currentRoast === 'medium') { micron = 980; temp = 92; }
+        if (currentRoast === 'dark') { micron = 1050; temp = 88; }
+        
+        // Adjust for process
+        if (currentProcess === 'natural' || currentProcess === 'fermented') {
+            micron += 50; // coarser for fast draining
+            temp -= 1; // slightly cooler
+        }
+
+        // Adjust for Method
+        if (currentMethod === 'aiden') {
+            // Aiden handles fine grinds well, but let's keep it safe
+            micron -= 50; 
+        }
+
+        document.getElementById('grindSize').innerText = micron;
+
+        // Logic: APAX Water Recipe (Visual Only)
+        // Simple heuristic: Light/Washed = Soft water (more Tonik/Lilac). Dark = Harder (Jamm).
+        let t = 2, j = 2, l = 2; // base
+        if (currentRoast === 'light') { t += 1.5; l += 1; }
+        if (currentRoast === 'dark') { j += 2; }
+        if (currentProcess === 'natural') { j += 1; } // body
+        
+        // Normalize to visual height
+        const totalP = t + j + l;
+        const hT = (t/totalP) * 120 + 20; 
+        const hJ = (j/totalP) * 120 + 20;
+        const hL = (l/totalP) * 120 + 20;
+
+        document.getElementById('vis-tonik').style.height = hT + "px";
+        document.getElementById('vis-tonik').innerText = t.toFixed(1);
+        
+        document.getElementById('vis-jamm').style.height = hJ + "px";
+        document.getElementById('vis-jamm').innerText = j.toFixed(1);
+
+        document.getElementById('vis-lilac').style.height = hL + "px";
+        document.getElementById('vis-lilac').innerText = l.toFixed(1);
+
+        // Logic: Pour Structure (Steps)
+        const stepsContainer = document.getElementById('steps');
+        stepsContainer.innerHTML = ''; // clear
+
+        let steps = [];
+
+        // STRATEGY GENERATOR
+        if (style === 'hoffmann' || (style === 'auto' && currentRoast === 'medium')) {
+            // Hoffmann 2-Pour
+            const bloom = coffee * 2;
+            const p1 = waterTotal * 0.6;
+            steps = [
+                { t: "0:00", a: `Bloom with <span class="step-highlight">${bloom}g</span> water. Swirl gently.`, temp: temp },
+                { t: "0:45", a: `Pour to <span class="step-highlight">${(p1).toFixed(0)}g</span> (60% total).`, temp: temp },
+                { t: "1:30", a: `Pour slowly to <span class="step-highlight">${waterTotal}g</span> total.`, temp: temp },
+                { t: "1:45", a: `Stir 1x clockwise, then 1x counter-clockwise.`, temp: null },
+                { t: "3:00", a: `Drawdown complete.`, temp: null }
+            ];
+            document.getElementById('totalTime').innerText = "3:30 Total";
+        } else if (style === 'kasuya' || (style === 'auto' && currentRoast === 'dark')) {
+            // 4:6 Method
+            const p = (waterTotal / 5).toFixed(0);
+            steps = [
+                { t: "0:00", a: `Pour 1: <span class="step-highlight">${p}g</span> (Sweetness).`, temp: temp },
+                { t: "0:45", a: `Pour 2: To <span class="step-highlight">${p*2}g</span> (Acidity).`, temp: temp },
+                { t: "1:30", a: `Pour 3: To <span class="step-highlight">${p*3}g</span> (Strength).`, temp: temp },
+                { t: "2:10", a: `Pour 4: To <span class="step-highlight">${p*4}g</span> (Strength).`, temp: temp },
+                { t: "2:45", a: `Pour 5: To <span class="step-highlight">${waterTotal}g</span>.`, temp: temp },
+            ];
+            document.getElementById('totalTime').innerText = "3:45 Total";
+        } else {
+            // Standard / Light Roast High Extraction
+            const bloom = coffee * 3;
+            const rem = waterTotal - bloom;
+            const p = rem / 2;
+            steps = [
+                { t: "0:00", a: `Bloom <span class="step-highlight">${bloom}g</span> water. Agitate wet grounds.`, temp: temp },
+                { t: "1:00", a: `Pour to <span class="step-highlight">${(bloom + p).toFixed(0)}g</span>.`, temp: temp },
+                { t: "2:00", a: `Pour to <span class="step-highlight">${waterTotal}g</span>.`, temp: temp },
+            ];
+            document.getElementById('totalTime').innerText = "3:15 Total";
+        }
+
+        // Render Steps
+        steps.forEach((s, i) => {
+            const li = document.createElement('li');
+            li.className = 'step-item';
+            
+            let tempBadge = '';
+            if (s.temp) {
+                tempBadge = `<span class="temp-badge">${s.temp}°C</span>`;
+            }
+
+            li.innerHTML = `
+                <div class="step-num">${i+1}</div>
+                <div>
+                    <div style="font-weight:700; font-size:13px; color:var(--text-sub); margin-bottom:4px;">${s.t}</div>
+                    <div>${tempBadge} ${s.a}</div>
+                </div>
+            `;
+            stepsContainer.appendChild(li);
+        });
+    }
+
+    // --- HISTORY / LOGGING ---
+    function saveRecipe() {
+        const bean = document.getElementById('beanInput').value || "Unknown Bean";
+        const entry = {
+            id: Date.now(),
+            date: new Date().toLocaleDateString(),
+            bean: bean,
+            roast: currentRoast,
+            process: currentProcess,
+            water: document.getElementById('volRange').value,
+            ratio: document.getElementById('ratioRange').value,
+            method: currentMethod
+        };
+
+        // Use safe parsing
+        const history = safeJsonParse('brewLog', []);
+        history.unshift(entry); // add to top
+        localStorage.setItem('brewLog', JSON.stringify(history));
+        
+        renderHistory();
+        alert("Brew Saved to Log!");
+    }
+
+    function toggleHistory() {
+        const ol = document.getElementById('historyOverlay');
+        ol.classList.toggle('active');
+    }
+
+    function renderHistory() {
+        const list = document.getElementById('historyList');
+        const history = safeJsonParse('brewLog', []);
+        
+        list.innerHTML = '';
+        if (history.length === 0) {
+            list.innerHTML = '<div style="text-align:center; color:var(--text-sub);">No brews saved yet.</div>';
+            return;
+        }
+
+        history.forEach(h => {
+            const item = document.createElement('div');
+            item.className = 'card';
+            item.style.padding = '16px';
+            item.innerHTML = `
+                <div style="display:flex; justify-content:space-between; font-weight:700;">
+                    <span>${h.bean}</span>
+                    <span style="color:var(--text-sub); font-size:12px;">${h.date}</span>
+                </div>
+                <div style="font-size:13px; color:var(--text-sub); margin-top:4px;">
+                    ${h.roast} • ${h.process} • ${h.water}ml (1:${h.ratio})
+                </div>
+                <button onclick="loadBrew(${h.id})" style="margin-top:12px; width:100%; padding:8px; background:white; border:1px solid #e2e8f0; border-radius:12px; font-weight:600; cursor:pointer;">Load Settings</button>
+            `;
+            list.appendChild(item);
+        });
+    }
+
+    function loadBrew(id) {
+        const history = safeJsonParse('brewLog', []);
+        const entry = history.find(h => h.id === id);
+        if (entry) {
+            document.getElementById('beanInput').value = entry.bean;
+            document.getElementById('volRange').value = entry.water;
+            document.getElementById('ratioRange').value = entry.ratio;
+            setRoast(entry.roast);
+            setProcess(entry.process);
+            toggleHistory(); // close modal
+        }
+    }
+
+    // --- AUTO SUGGESTIONS ---
+    function filterHistory() {
+        const input = document.getElementById('beanInput').value.toLowerCase();
+        const suggestionsBox = document.getElementById('suggestions');
+        
+        if (input.length < 2) {
+            suggestionsBox.classList.remove('active');
+            return;
+        }
+
+        const history = safeJsonParse('brewLog', []);
+        // Get unique bean names that match input
+        const matches = [...new Set(history.map(h => h.bean))]
+                        .filter(name => name.toLowerCase().includes(input))
+                        .slice(0, 5); // max 5
+
+        if (matches.length > 0) {
+            suggestionsBox.innerHTML = '';
+            matches.forEach(name => {
+                const div = document.createElement('div');
+                div.className = 'suggestion-item';
+                div.innerText = name;
+                div.onclick = () => {
+                    document.getElementById('beanInput').value = name;
+                    suggestionsBox.classList.remove('active');
+                };
+                suggestionsBox.appendChild(div);
+            });
+            suggestionsBox.classList.add('active');
+        } else {
+            suggestionsBox.classList.remove('active');
+        }
+    }
+
+    // --- FELLOW AIDEN UPLOAD ---
+    async function uploadToAiden() {
+            const statusDiv = document.getElementById('uploadStatus');
+            const email = document.getElementById('fellowEmail').value;
+            const password = document.getElementById('fellowPassword').value;
+
+            if (!email || !password) {
+                statusDiv.innerHTML = '<span style="color: #ef4444;">Please enter Email & Password</span>';
+                return;
+            }
+
+            // Save credentials to local storage (USER REQUESTED FEATURE)
+            localStorage.setItem('fellowEmail', email);
+            localStorage.setItem('fellowPassword', password);
+
+            statusDiv.innerHTML = '<span style="color: var(--accent-gold);">Connecting to Fellow...</span>';
+
+            const payload = {
+                email: email,
+                password: password,
+                title: document.getElementById('beanInput').value || "Coffee Geek Brew",
+                total_water: parseInt(document.getElementById('volRange').value),
+                ratio: parseFloat(document.getElementById('ratioRange').value),
+                roast: currentRoast, 
+                process: currentProcess
+            };
+
+            try {
+                // Calls backend function in /netlify/functions/generate-link.py
+                const response = await fetch('/.netlify/functions/generate-link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.status === 404) {
+                    throw new Error("Backend function not found. Did you deploy the python script?");
+                }
+
+                const data = await response.json();
+
+                if (data.success) {
+                    statusDiv.innerHTML = `<span style="color: var(--accent-green);">Success! </span> <a href="${data.link}" target="_blank" style="color: var(--text-main); text-decoration: underline;">Click to Open in App</a>`;
+                } else {
+                    statusDiv.innerHTML = `<span style="color: #ef4444;">Error: ${data.error}</span>`;
+                }
+
+            } catch (err) {
+                console.error(err);
+                statusDiv.innerHTML = `<span style="color: #ef4444;">Failed: ${err.message}</span>`;
+            }
+        }
+</script>
+</body>
+</html>
